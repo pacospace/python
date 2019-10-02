@@ -180,6 +180,28 @@ class TestPackageVersion(PythonTestCase):
                 meta=_META
             )
 
+    def test_parse_semver(self):
+        package_version = PackageVersion(
+            name="tensorflow",
+            version="==1.9.0",
+            index="https://pypi.org/simple",
+            develop=False
+        )
+        assert package_version.semantic_version.major == 1
+        assert package_version.semantic_version.minor == 9
+        assert package_version.semantic_version.patch == 0
+
+    def test_parse_semver_leading_zeros(self):
+        package_version = PackageVersion(
+            name="pyyaml",
+            version="==3.01.2",
+            index="https://pypi.org/simple",
+            develop=False
+        )
+        assert package_version.semantic_version.major == 3
+        assert package_version.semantic_version.minor == 1
+        assert package_version.semantic_version.patch == 2
+
     def test_sorted(self):
         array = []
         for version in ('==1.0.0', '==0.1.0', '==3.0.0'):
@@ -201,3 +223,38 @@ class TestPackageVersion(PythonTestCase):
 
         vs = PackageVersion(name='tensorflow', version='==2.1.0', develop=False).version_specification
         assert pv in vs
+
+    def test_normalize_python_package_name(self):
+        package_version = PackageVersion(name='Cython', version='0.29.13', develop=False)
+        assert package_version.name == "cython"
+
+        package_version = PackageVersion(name='semantic_version', version='2.6.0', develop=False)
+        assert package_version.name == "semantic-version"
+
+        package_version = PackageVersion(name='delegator.py', version='0.1.1', develop=False)
+        assert package_version.name == "delegator-py"
+
+    def test_normalize_python_package_version(self):
+        package_version = PackageVersion(name='oauth2client', version='1.0beta2', develop=False)
+        assert package_version.version == "1.0b2"
+
+        package_version = PackageVersion(name="regex", version="2019.02.06", develop=False)
+        assert package_version.version == "2019.2.6"
+
+        package_version = PackageVersion(name="xgboost", version="0.7.post2", develop=False)
+        assert package_version.version == "0.7.post2"
+
+        package_version = PackageVersion(name="xgboost", version="0.71", develop=False)
+        assert package_version.version == "0.71"
+
+        package_version = PackageVersion(name="ipywidgets", version="6.0.0.rc3", develop=False)
+        assert package_version.version == "6.0.0rc3"
+
+        package_version = PackageVersion(name="pytz", version="2011b", develop=False)
+        assert package_version.version == "2011b0"
+
+        package_version = PackageVersion(name="gitpython", version="0.3.2.RC1", develop=False)
+        assert package_version.version == "0.3.2rc1"
+
+        package_version = PackageVersion(name="ipywidgets", version="5.0.0.b5", develop=False)
+        assert package_version.version == "5.0.0b5"

@@ -12,7 +12,10 @@ attrs = "*"
 contoml = "*"
 beautifulsoup4 = "==4.6.3"
 lxml = "*"
-semantic_version = "*"
+semantic-version = "*"
+pyelftools = "*"
+packaging = "*"
+setuptools = "*"
 
 [dev-packages]
 pytest = "*"
